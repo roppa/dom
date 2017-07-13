@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>DOM Events</title>
+  <style>
+    .test {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <section>
+    <h1>DOM Events</h1>
+    <button type="button" name="beep">Beep</button>
+    <button type="button" name="boop">Boop</button>
+    <button type="button" name="killjoy">Killjoy</button>
+    <ul id="log"></ul>
+  </section>
+  <script type="text/javascript">
+    var log = (function (element) {
+      return function () {
+        var message = Array.prototype.slice.apply(arguments);
+        var li = document.createElement('li');
+        li.textContent = message.join(', ');
+        element.appendChild(li);
+      };
+    }(document.getElementById('log')));
+
+    var phases = {
+      0: 'Event.NONE',
+      1: 'Event.CAPTURING_PHASE',
+      2: 'Event.AT_TARGET',
+      3: 'Event.BUBBLING_PHASE',
+    };
+
+    var beepButton = document.querySelector('button[name=beep]');
+    var boopButton = document.querySelector('button[name=boop]');
+    var killjoyButton = document.querySelector('button[name=killjoy]');
+
+    // in this case, the window will be the eventTarget
+    var windowEvent = function (event) {
+      log(phases[event.eventPhase] || 'unknown event phase', 'window click');
+    };
+
+    window.addEventListener('click', windowEvent);
+
+    // in this case, the window will be the eventTarget
+    var windowCapturingEvent = function (event) {
+      log(phases[event.eventPhase] || 'unknown event phase', 'window captured click');
+    };
+
+    window.addEventListener('click', windowCapturingEvent, true);
+
+    // in this case, the document will be the eventTarget
+    var documentEvent = function (event) {
+      log(phases[event.eventPhase] || 'unknown event phase', 'document click');
+    };
+
+    document.addEventListener('click', documentEvent);
+
+    // in this case, the button will be the eventTarget, and bubbling will not occur
+    var beepButtonClick = function (event) {
+      log(phases[event.eventPhase] || 'unknown event phase', 'beep clicked, no bubbling!');
+      event.stopPropagation();
+    };
+
+    beepButton.addEventListener('click', beepButtonClick);
+
+    // in this case, the button will be the eventTarget, and bubbling will occur
+    var boopButtonClick = function (event) {
+      log(phases[event.eventPhase] || 'unknown event phase', 'boop clicked, bubbling!');
+    };
+
+    boopButton.addEventListener('click', boopButtonClick);
+
+    // lets remove events on the other buttons
+    var killjoyButtonClick = function (event) {
+      window.removeEventListener('click', windowEvent);
+      window.removeEventListener('click', windowCapturingEvent, true);
+      document.removeEventListener('click', documentEvent);
+      beepButton.removeEventListener('click', beepButtonClick);
+      boopButton.removeEventListener('click', boopButtonClick);
+      log('No fun for you anymore!');
+    };
+
+    killjoyButton.addEventListener('click', killjoyButtonClick);
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>DOM Elements</title>
+  <style>
+    .danger {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <section>
+    <h1>DOM Elements</h1>
+    <ul></ul>
+    <div id="log"></div>
+  </section>
+  <script type="text/javascript">
+    // get the only ul element on the page
+    var list = document.getElementsByTagName('ul')[0];
+
+    // lets create a new li element and add it to the ul element
+    var li = document.createElement('li');
+
+    // we can set the text node of the element
+    li.textContent = 'First li';
+
+    // we can set attributes such as id and class
+    li.id = 'first';
+    li.className = 'danger'; // notice 'className' and not 'class'
+
+    // now append the element to the ul
+    list.appendChild(li);
+
+    // lets add a few more
+    ['second', 'third', 'fourth', 'fith', 'sixth'].forEach((item) => {
+      var li = document.createElement('li');
+      li.textContent = item;
+      list.appendChild(li);
+    });
+
+    // instead of logging to the console, lets update the dom with our log
+    var log = (function domLog(log) {
+      return function logMessage() {
+        var args = Array.prototype.slice.apply(arguments);
+        var p = document.createElement('p');
+        p.textContent = args.join(', ');
+        log.appendChild(p);
+      };
+    }(document.getElementById('log')));
+
+    // lets do some traversal
+    // as the dom is a tree, you can traverse by finding a node, then getting children
+    log('firstChild', list.firstChild, list.firstChild.textContent);
+    log('firstChild.nextSibling', list.firstChild.nextSibling, list.firstChild.nextSibling.textContent);
+    log('firstChild.nextSibling.nextSibling', list.firstChild.nextSibling.nextSibling,
+      list.firstChild.nextSibling.nextSibling.textContent);
+    log('lastChild', list.lastChild, list.lastChild.textContent);
+
+  </script>
+</body>
+</html>
